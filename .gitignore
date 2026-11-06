@@ -8,3 +8,6 @@ src/generated/
 coverage/
 *.tgz
 *.log
+certificates/
+deployment/backups/
+__pycache__/

@@ -1,0 +1,30 @@
+# DRAFT: add inside the existing http {} only after owner approval.
+# Certificate deployment and backend gateway must be ready first.
+server {
+    listen 80;
+    server_name vse-vozmozhno.ru;
+    location ^~ /.well-known/acme-challenge/ {
+        root /acme;
+        try_files $uri =404;
+    }
+    location / { return 308 https://vse-vozmozhno.ru$request_uri; }
+}
+server {
+    listen 443 ssl;
+    server_name vse-vozmozhno.ru;
+    ssl_certificate /letsencrypt/business-card/fullchain.pem;
+    ssl_certificate_key /letsencrypt/business-card/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    client_max_body_size 64k;
+    add_header X-Content-Type-Options nosniff always;
+    resolver 127.0.0.11 valid=30s ipv6=off;
+    set $business_card_backend business-card-edge:8080;
+    location / {
+        proxy_pass http://$business_card_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 30s;
+    }
+}

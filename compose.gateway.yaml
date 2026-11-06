@@ -1,0 +1,27 @@
+name: backend-business-card-gateway
+services:
+  edge:
+    image: nginx@sha256:552e7481ca93ffccd046aa658dbbed22caefbc09c66fa7cd247cbb90b8a5c609
+    volumes:
+      - ./deployment/gateway.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      card: {}
+      front:
+        aliases: [business-card-edge]
+    restart: unless-stopped
+    mem_limit: 64m
+    cpus: 0.25
+    pids_limit: 64
+    read_only: true
+    tmpfs: [/var/cache/nginx, /var/run, /tmp]
+    security_opt: ['no-new-privileges:true']
+    logging:
+      driver: json-file
+      options: { max-size: '5m', max-file: '2' }
+networks:
+  card:
+    external: true
+    name: backend-business-card_default
+  front:
+    external: true
+    name: skazka-recovery_front
