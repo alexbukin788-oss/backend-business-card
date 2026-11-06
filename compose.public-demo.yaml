@@ -1,0 +1,21 @@
+# Optional temporary HTTPS URL. No changes to the server's shared nginx or firewall.
+name: backend-business-card-public-demo
+services:
+  tunnel:
+    image: cloudflare/cloudflared@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba
+    command: ['tunnel', '--no-autoupdate', '--protocol', 'http2', '--url', 'http://app:3000']
+    networks: [business-card]
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.25
+    pids_limit: 64
+    read_only: true
+    cap_drop: ['ALL']
+    security_opt: ['no-new-privileges:true']
+    logging:
+      driver: json-file
+      options: { max-size: '5m', max-file: '2' }
+networks:
+  business-card:
+    external: true
+    name: backend-business-card_default

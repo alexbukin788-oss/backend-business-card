@@ -3,6 +3,9 @@
 TypeScript / Node.js / NestJS / Prisma / PostgreSQL / GraphQL / Docker.
 API показывает профиль, профессиональные ссылки, навыки, опыт с датами и достижениями, проекты. Apollo Sandbox доступен на `/graphql`.
 
+Временная демонстрация: https://olympics-socket-undo-sociology.trycloudflare.com/graphql
+Адрес проверен 07.11.2026; может измениться после перезапуска туннеля. Инструкция — `docs/operations.md`.
+
 > Сейчас это явно обозначенный **демонстрационный профиль**. Он не описывает реального человека. Перед сдачей заменить данные в `prisma/profile.data.ts`.
 
 ## Запуск с нуля
@@ -31,9 +34,16 @@ query {
   profile {
     name
     description
-    skills { name }
-    experience { company position }
-    projects { name }
+    skills {
+      name
+    }
+    experience {
+      company
+      position
+    }
+    projects {
+      name
+    }
   }
 }
 ```
@@ -45,8 +55,13 @@ query BusinessCard {
   profile {
     name
     description
-    links { label url }
-    skills { name }
+    links {
+      label
+      url
+    }
+    skills {
+      name
+    }
     experience {
       company
       position
@@ -54,7 +69,10 @@ query BusinessCard {
       endDate
       achievements
     }
-    projects { name url }
+    projects {
+      name
+      url
+    }
   }
 }
 ```
