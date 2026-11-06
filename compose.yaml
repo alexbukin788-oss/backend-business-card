@@ -1,0 +1,55 @@
+name: backend-business-card
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: business_card
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: business_card
+    volumes:
+      - profile-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U business_card -d business_card']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 0.5
+    logging:
+      driver: json-file
+      options: { max-size: '5m', max-file: '2' }
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://business_card:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/business_card
+      PORT: 3000
+    ports:
+      - '127.0.0.1:${APP_PORT:-4310}:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      start_period: 40s
+      retries: 6
+    init: true
+    restart: unless-stopped
+    mem_limit: 768m
+    cpus: 0.5
+    pids_limit: 128
+    security_opt: ['no-new-privileges:true']
+    cap_drop: ['ALL']
+    logging:
+      driver: json-file
+      options: { max-size: '5m', max-file: '2' }
+volumes:
+  profile-data:
