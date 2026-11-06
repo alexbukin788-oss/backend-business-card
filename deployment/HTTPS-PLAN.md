@@ -31,3 +31,7 @@ HTTPS пока НЕ активен: авторитетная зона .ru не �
 - cat /srv/backend-business-card/certificates/status.json
 
 Остановка автоматического обслуживания: systemctl disable --now backend-business-card-https.timer. Это не удаляет сертификат или работающие маршруты. Резервные копии nginx хранятся в deployment/backups/ на сервере; нельзя слепо восстанавливать их поверх изменений других чатов. Откат должен удалить только блок BEGIN/END backend-business-card domain с nginx -t и graceful reload.
+
+## Завершение — 07.11.2026, около05:33 Владивосток
+DNS опубликован. Автоматика получила сертификат Let's Encrypt до04.02.2027 и активировала HTTPS. Внешний smoke PASS, HTTP308/корень302, сайт сказок200/CRM302, verify-http.py PASS. Тестовое продление certbot renew --dry-run --no-random-sleep-on-renew PASS. Предыдущие WAITING_DNS/неактивен выше — исторические состояния.
+
